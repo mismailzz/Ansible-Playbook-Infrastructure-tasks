@@ -1,0 +1,24 @@
+---
+- name: DNS Hosts
+  hosts: myserver
+  become: yes
+  become_user: root
+  tasks:
+  - name: "ADD lines in /etc/hosts"
+    lineinfile:
+      path: /etc/hosts
+      line: "{{item}}"
+      backup: yes
+      state: present
+    with_lines: cat hostslist.txt
+    register: output
+  - name: "ADD lines in /etc/hosts.eqiv"
+    lineinfile:
+      path: /etc/hosts.eqiv
+      line: "{{item}}"
+      backup: yes
+      state: present
+    with_lines: "cat hostslist.txt | awk '{print $2}'"
+    register: output
+  - debug:
+      msg: output.stdout
